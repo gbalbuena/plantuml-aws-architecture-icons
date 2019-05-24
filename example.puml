@@ -1,0 +1,32 @@
+@startuml example
+
+!include AWS_Architecture_Icons_PNG/Light_BG/Compute/Amazon_EC2.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Compute/AWS_Lambda.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_Aurora.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_DynamoDB.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_ElastiCache.puml
+
+skinparam component {
+   BorderColor<<aws>> transparent
+   BackgroundColor<<aws>> transparent
+   Shadowing<<aws>> false
+}
+
+component "database1" <<$Amazon_Aurora>> as ec2 <<aws>>
+component "database2" <<$Amazon_DynamoDB>> as ec2 <<aws>>
+component "cache1" <<$Amazon_ElastiCache>> as ec2 <<aws>>
+component "backend1" <<$Amazon_EC2>> as ec2 <<aws>>
+component "lambda1" <<$AWS_Lambda>> as ec2 <<aws>>
+component "lambda2" <<$AWS_Lambda>> as ec2 <<aws>>
+component "lambda3" <<$AWS_Lambda>> as ec2 <<aws>>
+component "lambda4" <<$AWS_Lambda>> as ec2 <<aws>>
+
+database1 <--> backend1
+database2 --> lambda1
+cache1 <--> backend1
+backend1 --> lambda1
+backend1 --> lambda2
+backend1 --> lambda3
+backend1 --> lambda4
+
+@enduml

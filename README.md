@@ -1,1 +1,1 @@
-# plantuml-aws-architecture-icons
+# PlantUML - AWS Architecture Icons
