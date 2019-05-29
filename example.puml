@@ -1,17 +1,55 @@
 @startuml example
 
+!include AWS_Architecture_Icons_PNG/Light_BG/Networking_&_Content_Delivery/Amazon_Route_53.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Networking_&_Content_Delivery/Amazon_API_Gateway.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/_General_AWS/AWS_General_Users_light_bg.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/_General_AWS/AWS_General_Mobile_Client_light_bg.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/_General_AWS/Client_light_bg.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Analytics/AWS_Lake_Formation.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Application_Integration/Amazon_Simple_Queue_Service_SQS_Queue_light_bg.puml
 !include AWS_Architecture_Icons_PNG/Light_BG/Compute/Amazon_EC2.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Compute/AWS_Elastic_Beanstalk.puml
 !include AWS_Architecture_Icons_PNG/Light_BG/Compute/AWS_Lambda.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Storage/Amazon_Simple_Storage_Service_S3.puml
 !include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_Aurora.puml
 !include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_DynamoDB.puml
 !include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_ElastiCache.puml
+!include AWS_Architecture_Icons_PNG/Light_BG/Database/Amazon_ElastiCache_For_Redis_light_bg.puml
 
 skinparam component {
-   BorderColor<<aws>> transparent
-   BackgroundColor<<aws>> transparent
-   Shadowing<<aws>> false
+  BorderColor<<aws>> transparent
+  BackgroundColor<<aws>> transparent
+  Shadowing<<aws>> false
+  
+  ' Only greyscale
+  ' skinparam monochrome true
+
+  ' Display UML icons (-, +, ~, #) instead of visibility icons
+  skinparam classAttributeIconSize 0
+  
+  ' Disable class / interface / ... icons
+  hide circles
+  
+  ' Hide empty boxes
+  hide empty fields
+  hide empty methods
+  
+  ' Display packages as frame
+  skinparam packageStyle frame
+  
+  ' Disable shadows
+  skinparam shadowing false
 }
 
+component "mobile" <<$AWS_General_Mobile_Client_light_bg>> as mobile <<aws>>
+component "browser" <<$Client_light_bg>> as client <<aws>>
+component "users" <<$AWS_General_Users_light_bg>> as users <<aws>>
+
+component "route53" <<$Amazon_Route_53>> as users <<aws>>
+
+component "api_gateway" <<$Amazon_API_Gateway>> as users <<aws>>
+
+component "queue" <<$Amazon_Simple_Queue_Service_SQS_Queue_light_bg>> as queue1 <<aws>>
 component "database1" <<$Amazon_Aurora>> as ec2 <<aws>>
 component "database2" <<$Amazon_DynamoDB>> as ec2 <<aws>>
 component "cache1" <<$Amazon_ElastiCache>> as ec2 <<aws>>
@@ -21,12 +59,26 @@ component "lambda2" <<$AWS_Lambda>> as ec2 <<aws>>
 component "lambda3" <<$AWS_Lambda>> as ec2 <<aws>>
 component "lambda4" <<$AWS_Lambda>> as ec2 <<aws>>
 
-database1 <--> backend1
-database2 --> lambda1
+[users] --> [mobile]
+[users] --> [browser]
+[mobile] --> [route53]
+[browser] --> [route53]
+
+[route53] --> [api_gateway]
+
+[api_gateway] --> lambda1
+[api_gateway] --> lambda2
+[api_gateway] --> lambda3
+[api_gateway] --> backend1
+
+queue --> lambda1: trigger
 cache1 <--> backend1
 backend1 --> lambda1
-backend1 --> lambda2
+backend1 --> queue
 backend1 --> lambda3
-backend1 --> lambda4
+backend1 --> database1
+backend1 --> database2
+database2 --> lambda4
+lambda4 --> database1
 
 @enduml
